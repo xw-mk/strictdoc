@@ -123,6 +123,7 @@ class SDWriter:
                 output += "\n"
 
             enable_mid = document_config.enable_mid
+            relation_field = document_config.relation_field
             markup = document_config.markup
             auto_levels_specified = document_config.ng_auto_levels_specified
             layout = document_config.layout
@@ -132,6 +133,7 @@ class SDWriter:
 
             if (
                 enable_mid is not None
+                or relation_field is not None
                 or markup is not None
                 or auto_levels_specified
                 or layout is not None
@@ -145,6 +147,11 @@ class SDWriter:
                 if enable_mid is not None:
                     output += "  ENABLE_MID: "
                     output += "True" if enable_mid else "False"
+                    output += "\n"
+
+                if relation_field is not None:
+                    output += "  RELATION_FIELD: "
+                    output += relation_field
                     output += "\n"
 
                 if markup is not None:
@@ -408,7 +415,11 @@ class SDWriter:
             ):
                 continue
             fields = section_content.ordered_fields_lookup[field_name]
+
             for field in fields:
+                if not field.is_document_origin():
+                    continue
+
                 field_value = field.get_text_value()
                 assert len(field_value) > 0
 
@@ -447,7 +458,7 @@ class SDWriter:
         elif isinstance(grammar_field, GrammarElementFieldSingleChoice):
             output += RequirementFieldType.SINGLE_CHOICE
             output += "("
-            output += ", ".join(grammar_field.options)
+            output += ", ".join(grammar_field.get_unprocessed_options())
             output += ")"
         elif isinstance(grammar_field, GrammarElementFieldMultipleChoice):
             output += RequirementFieldType.MULTIPLE_CHOICE
@@ -482,6 +493,10 @@ class SDWriter:
 
             if isinstance(reference, FileReference):
                 ref: FileReference = reference
+                if ref.role is not None:
+                    output += "  ROLE: "
+                    output += ref.role
+                    output += "\n"
                 file_format = ref.get_file_format()
                 if file_format:
                     output += "  FORMAT: "
