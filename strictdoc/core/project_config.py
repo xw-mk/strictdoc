@@ -119,6 +119,7 @@ class ProjectConfig:
         source_root_path: Optional[str] = None,
         include_source_paths: Optional[List[str]] = None,
         exclude_source_paths: Optional[List[str]] = None,
+        css_path: Optional[str] = None,
         test_report_root_dict: Optional[Dict[str, str]] = None,
         source_nodes: Optional[List[SourceNodesEntry]] = None,
         html2pdf_strict: bool = False,
@@ -228,6 +229,7 @@ class ProjectConfig:
 
         self.html2pdf_strict: bool = html2pdf_strict
         self.html2pdf_template: Optional[str] = html2pdf_template
+        self.css_path: Optional[str] = css_path
         self.bundle_document_version: Optional[str] = bundle_document_version
         self.bundle_document_date: Optional[str] = bundle_document_date
 
@@ -578,6 +580,7 @@ class ProjectConfigLoader:
         source_root_path = None
         include_source_paths: List[str] = []
         exclude_source_paths: List[str] = []
+        css_path: Optional[str] = None
         test_report_root_dict: Dict[str, str] = {}
         source_nodes: List[SourceNodesEntry] = []
         html2pdf_strict: bool = False
@@ -705,6 +708,26 @@ class ProjectConfigLoader:
                         f"strictdoc.toml: 'exclude_source_paths': "
                         f"{exception_} Provided string: '{exclude_source_path}'."
                     ) from exception_
+
+            css_path = project_content.get("css_path", css_path)
+            if css_path is not None:
+                original_css_path = css_path
+                if (
+                    not os.path.isabs(css_path)
+                    and path_to_config is not None
+                ):
+                    css_path = os.path.join(
+                        os.path.dirname(path_to_config), css_path
+                    )
+                    css_path = os.path.abspath(css_path)
+                if not os.path.isdir(css_path):
+                    raise ValueError(
+                        f"strictdoc.toml: 'css_path': "
+                        f"Provided path does not exist: "
+                        f"{original_css_path}."
+                    )
+                if not os.path.isabs(css_path):
+                    css_path = os.path.abspath(css_path)
 
             html2pdf_strict = project_content.get(
                 "html2pdf_strict", html2pdf_strict
@@ -854,6 +877,7 @@ class ProjectConfigLoader:
             source_root_path=source_root_path,
             include_source_paths=include_source_paths,
             exclude_source_paths=exclude_source_paths,
+            css_path=css_path,
             test_report_root_dict=test_report_root_dict,
             source_nodes=source_nodes,
             html2pdf_strict=html2pdf_strict,

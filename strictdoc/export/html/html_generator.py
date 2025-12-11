@@ -202,6 +202,18 @@ class HTMLGenerator:
                                  independently on how nested the contained documents are.
         """
 
+        # export user supplied css files. Do this first so they can be used in place of the default strictdoc files.
+        if project_config.css_path is not None:
+            output_css_path = os.path.join(
+                export_output_html_root,
+                project_config.dir_for_sdoc_assets,
+            )
+            sync_dir(
+                os.path.abspath(project_config.css_path),
+                output_css_path,
+                message=f"Copying project .css assets",
+            )
+
         # Export StrictDoc's own assets.
         output_html_static_files = os.path.join(
             export_output_html_root,

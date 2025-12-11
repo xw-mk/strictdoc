@@ -1,0 +1,6 @@
+[project]
+title= 'css test'
+
+css_path= "./css/"
+
+dir_for_sdoc_assets= "./_assets/"
