@@ -24,7 +24,7 @@ exclude = [
 ]
 
 [project]
-name = "strictdoc"
+name = "xw_strictdoc"
 dynamic = ["version"]
 description = "StrictDoc is open-source software for technical documentation and requirements management."
 readme = "README.md"
@@ -143,3 +143,14 @@ enable = [
 disable = [
     "fixit.rules"
 ]
+
+[tool.uv]
+keyring-provider = "subprocess"
+
+[[tool.uv.index]]
+name = "azure"
+url = "https://VssSessionToken@pkgs.dev.azure.com/Xwatch/Python/_packaging/Python/pypi/simple/"
+publish-url = "https://pkgs.dev.azure.com/Xwatch/Python/_packaging/Python/pypi/upload/"
+
+[dependency-groups]
+dev = ["artifacts-keyring>=1.0.0", "keyring>=25.6.0"]
