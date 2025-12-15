@@ -10,6 +10,7 @@
     {%- set title_has_h_level = true
         if sdoc_entity.is_composite
         and node_view not in ['table', 'zebra', 'simple', 'inline']
+        or node_view is 'plain'
     -%}
 
     {%- set h_level = sdoc_entity.ng_level + 1
